@@ -1,4 +1,4 @@
-import Link from "next/Link";
+import Link from "next/link";
 import Hero from "../components/Hero";
 import CourseCard from "../components/CourseCard";
 import SectionTitle from "../components/SectionTitle";
