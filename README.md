@@ -4,7 +4,7 @@ A modern and responsive **Student Course Portal** built with **Next.js App Route
 
 ## 🚀 Live Demo
 
-> Coming Soon
+(https://student-portal.adeelkhan.online/)
 
 ## 📸 Preview
 
