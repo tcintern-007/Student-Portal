@@ -1,93 +1,110 @@
 # 🎓 Student Course Portal
 
-A modern and responsive **Student Course Portal** built with **Next.js App Router** and **Tailwind CSS**. This project demonstrates the core concepts of Next.js, including **File-Based Routing**, **Layouts**, **Dynamic Routes**, and **Reusable Components**.
+A modern, responsive, and scalable **Student Course Portal** built with **Next.js App Router** and **Tailwind CSS**. This project demonstrates modern Next.js concepts such as **Server Components**, **Client Components**, **Dynamic Routing**, **Data-Driven Rendering**, and **Reusable Components**.
 
 ## 🚀 Live Demo
 
-(https://student-portal.adeelkhan.online/)
+🌐 https://student-portal.adeelkhan.online/
+
+---
 
 ## 📸 Preview
 
-> Add screenshots or a GIF here after deployment.
+> Add screenshots or a GIF of your application here.
 
 ---
 
 ## ✨ Features
 
-- 🏠 Home Page
-- 📚 Courses Page
-- 👨‍🏫 Instructors Page
-- 📖 Dynamic Course Details Page
-- 📞 Contact Page
-- 🔄 File-Based Routing
-- 📂 App Router
-- 🧩 Shared Layout (Navbar & Footer)
-- 🔗 Navigation using `next/link`
-- 🎯 Dynamic Routes using `[slug]`
-- 📱 Fully Responsive Design
-- 🎨 Modern UI with Tailwind CSS
-- ❌ Custom 404 Page
-- ♻️ Reusable Components
+* 🏠 Responsive Home Page
+* 📚 Dynamic Courses Page
+* 👨‍🏫 Dynamic Instructors Page
+* 📖 Dynamic Course Details Page
+* 🔍 Real-time Course Search
+* 🔗 Related Courses Section
+* ⭐ Featured Courses
+* 📞 Contact Page
+* 🧩 Reusable Components
+* 📂 Data-Driven Rendering
+* ⚡ Server & Client Components
+* 🔄 File-Based Routing
+* 🎯 Dynamic Routes (`[slug]`)
+* ⏳ Loading States
+* 📭 Empty State Handling
+* ❌ Custom 404 Page
+* 📱 Fully Responsive Design
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Next.js (App Router)**
-- **React**
-- **Tailwind CSS**
-- **JavaScript**
-- **Lucide React**
+* **Next.js (App Router)**
+* **React**
+* **JavaScript (ES6+)**
+* **Tailwind CSS**
+* **Lucide React**
 
 ---
 
 ## 📁 Project Structure
 
 ```text
-app/
+Student-Portal/
 │
-├── layout.js
-├── page.js
-├── globals.css
-│
-├── courses/
+├── app/
+│   ├── layout.js
 │   ├── page.js
-│   └── [slug]/
-│       └── page.js
+│   ├── globals.css
+│   ├── not-found.js
+│   │
+│   ├── contact/
+│   │   └── page.js
+│   │
+│   ├── courses/
+│   │   ├── page.js
+│   │   ├── loading.js
+│   │   └── [slug]/
+│   │       ├── page.js
+│   │       └── loading.js
+│   │
+│   └── instructors/
+│       ├── page.js
+│       └── loading.js
 │
-├── instructors/
-│   └── page.js
+├── components/
+│   ├── Navbar.jsx
+│   ├── Footer.jsx
+│   ├── Hero.jsx
+│   ├── CourseCard.jsx
+│   ├── InstructorCard.jsx
+│   ├── SearchBar.jsx
+│   ├── Badge.jsx
+│   └── SectionTitle.jsx
 │
-├── contact/
-│   └── page.js
+├── data/
+│   ├── courses.js
+│   └── instructors.js
 │
-└── not-found.js
-
-components/
-├── Navbar.jsx
-├── Footer.jsx
-├── Hero.jsx
-├── CourseCard.jsx
-├── InstructorCard.jsx
-
-data/
-└── courses.js
-
-public/
-└── images/
+├── public/
+└── package.json
 ```
 
 ---
 
 ## 📖 Concepts Demonstrated
 
-- Next.js App Router
-- File-Based Routing
-- Shared Layouts
-- Dynamic Routing
-- Component Reusability
-- Responsive Design
-- Static Data Rendering
+* Next.js App Router
+* File-Based Routing
+* Shared Layouts
+* Dynamic Routing
+* Server Components
+* Client Components
+* Dynamic Data Rendering
+* Component Reusability
+* Search & Filtering
+* Loading UI
+* Responsive Design
+* Modern Folder Structure
 
 ---
 
@@ -117,7 +134,7 @@ Run the development server:
 npm run dev
 ```
 
-Open your browser and visit:
+Open your browser:
 
 ```text
 http://localhost:3000
@@ -131,13 +148,11 @@ Example routes:
 
 ```text
 /courses/web-development
-
 /courses/ai-engineering
-
 /courses/ui-ux-design
 ```
 
-Each route is handled using:
+Each route is handled by:
 
 ```text
 app/courses/[slug]/page.js
@@ -147,26 +162,32 @@ app/courses/[slug]/page.js
 
 ## 🎯 Learning Objectives
 
-This project was developed to practice:
+This project was built to practice:
 
-- App Router
-- File-Based Routing
-- Layouts
-- Navigation with `next/link`
-- Dynamic Routes
-- Modern Next.js Project Structure
+* Next.js App Router
+* Server vs Client Components
+* File-Based Routing
+* Dynamic Routes
+* Component Reusability
+* Data Separation
+* Dynamic Rendering
+* Search Functionality
+* Modern Next.js Project Structure
 
 ---
 
 ## 📌 Future Improvements
 
-- Authentication
-- Backend Integration
-- Database Support
-- Search & Filters
-- Course Enrollment
-- Dashboard
-- API Integration
+* User Authentication
+* Backend Integration
+* Database Support
+* Course Enrollment
+* Student Dashboard
+* Instructor Dashboard
+* Admin Panel
+* API Integration
+* Pagination
+* Course Categories & Filters
 
 ---
 
@@ -174,10 +195,10 @@ This project was developed to practice:
 
 **Muhammad Adeel**
 
-- GitHub: https://github.com/MuhammadAdeel0072
+* GitHub: https://github.com/MuhammadAdeel0072
 
 ---
 
 ## ⭐ Support
 
-If you found this project helpful, consider giving it a ⭐ on GitHub.
+If you found this project helpful, consider giving it a ⭐ on GitHub!

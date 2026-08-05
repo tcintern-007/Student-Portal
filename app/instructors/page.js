@@ -1,6 +1,6 @@
 import InstructorCard from "../../components/InstructorCard";
 import SectionTitle from "../../components/SectionTitle";
-import { instructors } from "../../data/courses";
+import { instructors } from "../../data/instructors";
 
 export default function Instructors() {
   return (
