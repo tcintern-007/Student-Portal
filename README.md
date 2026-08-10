@@ -138,25 +138,21 @@ npm install
 
 ## 🚀 Running Locally
 
-### Start the Backend Server
+### Install all dependencies
 
 ```bash
-cd backend
+npm run install:all
+```
+
+### Start both Frontend and Backend
+
+```bash
 npm run dev
 ```
 
-The backend will run on **http://localhost:5000**
-
-### Start the Frontend Development Server
-
-Open a new terminal window:
-
-```bash
-cd frontend
-npm run dev
-```
-
-The frontend will run on **http://localhost:3000**
+This will start:
+- **Frontend** on **http://localhost:3000**
+- **Backend** on **http://localhost:5000**
 
 ---
 
