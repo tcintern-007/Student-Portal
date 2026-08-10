@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getCourses } from "../../lib/api";
+import { getCourses } from "../../../lib/api";
 import { Clock, User, BarChart3, ArrowLeft, CheckCircle } from "lucide-react";
 
 export default function CourseDetail({ params }) {
