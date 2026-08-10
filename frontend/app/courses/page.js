@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import CourseCard from "../../components/CourseCard";
 import SectionTitle from "../../components/SectionTitle";
 import CourseForm from "../../components/CourseForm";
-import { getCourses } from "../../lib/api";
+import { getCourses } from "../../../lib/api";
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
