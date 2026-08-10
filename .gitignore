@@ -1,1 +1,17 @@
-.next
+# Dependencies
+node_modules/
+
+# Frontend build artifacts
+frontend/.next/
+frontend/node_modules/
+
+# Environment variables
+.env.local
+.env
+.env.*.local
+frontend/.env.local
+frontend/.env
+
+# Backend
+backend/node_modules/
+backend/.env
