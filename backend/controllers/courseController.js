@@ -1,103 +1,151 @@
-import { courses } from "../data/courses.js";
+import pool from "../config/db.js";
 
-let nextId = courses.length + 1;
+export const getAllCourses = async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM courses ORDER BY id DESC"
+    );
 
-export const getAllCourses = (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: courses,
-  });
-};
-
-export const getCourseById = (req, res) => {
-  const course = courses.find((c) => c.id === parseInt(req.params.id));
-
-  if (!course) {
-    return res.status(404).json({
-      success: false,
-      message: `Course with ID ${req.params.id} not found.`,
+    res.status(200).json({
+      success: true,
+      data: result.rows,
     });
+  } catch (error) {
+    next(error);
   }
-
-  res.status(200).json({
-    success: true,
-    data: course,
-  });
 };
 
-export const createCourse = (req, res) => {
-  const { title, instructor, description, duration } = req.body;
+export const getCourseById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-  const newCourse = {
-    id: nextId++,
-    title,
-    instructor,
-    description,
-    duration,
-    image: "https://placehold.co/600x400/3b82f6/ffffff?text=New+Course",
-    slug: title.toLowerCase().replace(/\s+/g, "-"),
-    level: "Beginner",
-    category: "General",
-    rating: 0,
-    students: 0,
-    price: "Free",
-    skills: [],
-    modules: [],
-  };
+    const result = await pool.query(
+      "SELECT * FROM courses WHERE id = $1",
+      [id]
+    );
 
-  courses.push(newCourse);
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Course with ID ${id} not found.`,
+      });
+    }
 
-  res.status(201).json({
-    success: true,
-    data: newCourse,
-  });
-};
-
-export const updateCourse = (req, res) => {
-  const courseIndex = courses.findIndex(
-    (c) => c.id === parseInt(req.params.id)
-  );
-
-  if (courseIndex === -1) {
-    return res.status(404).json({
-      success: false,
-      message: `Course with ID ${req.params.id} not found.`,
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
     });
+  } catch (error) {
+    next(error);
   }
-
-  const { title, instructor, description, duration } = req.body;
-
-  courses[courseIndex] = {
-    ...courses[courseIndex],
-    title: title || courses[courseIndex].title,
-    instructor: instructor || courses[courseIndex].instructor,
-    description: description || courses[courseIndex].description,
-    duration: duration || courses[courseIndex].duration,
-  };
-
-  res.status(200).json({
-    success: true,
-    data: courses[courseIndex],
-  });
 };
 
-export const deleteCourse = (req, res) => {
-  const courseIndex = courses.findIndex(
-    (c) => c.id === parseInt(req.params.id)
-  );
+export const createCourse = async (req, res, next) => {
+  try {
+    const {
+      title,
+      instructor,
+      description,
+      duration,
+    } = req.body;
 
-  if (courseIndex === -1) {
-    return res.status(404).json({
-      success: false,
-      message: `Course with ID ${req.params.id} not found.`,
+    const image =
+      "https://placehold.co/600x400/3b82f6/ffffff?text=New+Course";
+
+    const slug = title.toLowerCase().trim().replace(/\s+/g, "-");
+
+    const result = await pool.query(
+      `INSERT INTO courses
+        (title, instructor, description, duration, image, slug)
+       VALUES
+        ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
+      [
+        title,
+        instructor,
+        description,
+        duration,
+        image,
+        slug,
+      ]
+    );
+
+    res.status(201).json({
+      success: true,
+      data: result.rows[0],
     });
+  } catch (error) {
+    next(error);
   }
+};
 
-  const deletedCourse = courses.splice(courseIndex, 1)[0];
+export const updateCourse = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
-  res.status(200).json({
-    success: true,
-    data: deletedCourse,
-    message: "Course deleted successfully.",
-  });
+    const {
+      title,
+      instructor,
+      description,
+      duration,
+    } = req.body;
+
+    const result = await pool.query(
+      `UPDATE courses
+       SET
+         title = $1,
+         instructor = $2,
+         description = $3,
+         duration = $4
+       WHERE id = $5
+       RETURNING *`,
+      [
+        title,
+        instructor,
+        description,
+        duration,
+        id,
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Course with ID ${id} not found.`,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteCourse = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      "DELETE FROM courses WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Course with ID ${id} not found.`,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
+      message: "Course deleted successfully.",
+    });
+  } catch (error) {
+    next(error);
+  }
 };

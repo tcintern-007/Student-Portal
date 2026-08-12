@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn, UserPlus, LogOut, User } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { isAuthenticated, user, logout } = useAuth();
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -21,6 +23,11 @@ export default function Navbar() {
       return pathname === "/";
     }
     return pathname.startsWith(path);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
   };
 
   return (
@@ -50,13 +57,45 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="hidden md:block">
-            <Link
-              href="/contact"
-              className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25"
-            >
-              Get Started
-            </Link>
+          <div className="hidden md:flex items-center space-x-4">
+            {isAuthenticated ? (
+              <>
+                <span className="text-sm text-gray-600 flex items-center gap-1.5">
+                  <User size={16} />
+                  {user?.name}
+                </span>
+                <Link
+                  href="/profile"
+                  className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
+                >
+                  Profile
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-sm font-medium text-red-600 hover:text-red-700 transition-colors duration-200 flex items-center gap-1.5"
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 flex items-center gap-1.5"
+                >
+                  <LogIn size={16} />
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 flex items-center gap-1.5"
+                >
+                  <UserPlus size={16} />
+                  Signup
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -69,7 +108,7 @@ export default function Navbar() {
 
         <div
           className={`md:hidden transition-all duration-300 ease-in-out ${
-            isOpen ? "max-h-64 opacity-100 pb-4" : "max-h-0 opacity-0"
+            isOpen ? "max-h-96 opacity-100 pb-4" : "max-h-0 opacity-0"
           } overflow-hidden`}
         >
           <div className="flex flex-col space-y-2 pt-2">
@@ -87,13 +126,47 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/contact"
-              onClick={() => setIsOpen(false)}
-              className="mx-4 bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-medium text-center hover:bg-blue-700 transition-all duration-200"
-            >
-              Get Started
-            </Link>
+            <div className="border-t border-gray-100 pt-2 mt-2">
+              {isAuthenticated ? (
+                <>
+                  <div className="px-4 py-2 text-sm text-gray-600 flex items-center gap-2">
+                    <User size={16} />
+                    {user?.name}
+                  </div>
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsOpen(false)}
+                    className="mx-4 block px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="mx-4 mt-2 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-200"
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="mx-4 block px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setIsOpen(false)}
+                    className="mx-4 mt-2 block bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-medium text-center hover:bg-blue-700 transition-all duration-200"
+                  >
+                    Signup
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
