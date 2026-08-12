@@ -44,29 +44,20 @@ export const createCourse = async (req, res, next) => {
   try {
     const {
       title,
-      instructor,
+      instructor_id,
       description,
-      duration,
     } = req.body;
-
-    const image =
-      "https://placehold.co/600x400/3b82f6/ffffff?text=New+Course";
-
-    const slug = title.toLowerCase().trim().replace(/\s+/g, "-");
 
     const result = await pool.query(
       `INSERT INTO courses
-        (title, instructor, description, duration, image, slug)
+        (title, instructor_id, description)
        VALUES
-        ($1, $2, $3, $4, $5, $6)
+        ($1, $2, $3)
        RETURNING *`,
       [
         title,
-        instructor,
+        instructor_id,
         description,
-        duration,
-        image,
-        slug,
       ]
     );
 
@@ -85,25 +76,22 @@ export const updateCourse = async (req, res, next) => {
 
     const {
       title,
-      instructor,
+      instructor_id,
       description,
-      duration,
     } = req.body;
 
     const result = await pool.query(
       `UPDATE courses
        SET
          title = $1,
-         instructor = $2,
-         description = $3,
-         duration = $4
-       WHERE id = $5
+         instructor_id = $2,
+         description = $3
+       WHERE id = $4
        RETURNING *`,
       [
         title,
-        instructor,
+        instructor_id,
         description,
-        duration,
         id,
       ]
     );
