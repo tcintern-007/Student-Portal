@@ -11,13 +11,29 @@ import pool from "./config/db.js";
 
 dotenv.config();
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+const corsOptions = {
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
 const app = express();
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3001"
-}));
+app.use(cors(corsOptions));
 
 app.use(express.json());
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "API is running",
+  });
+});
 
 app.use("/api/courses", courseRoutes);
 app.use("/api/students", studentRoutes);

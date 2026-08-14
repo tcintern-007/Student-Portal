@@ -7,28 +7,33 @@ import CourseCard from "../components/CourseCard";
 import SectionTitle from "../components/SectionTitle";
 import { CheckCircle, Clock, Users, Award } from "lucide-react";
 import { getCourses } from "../lib/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function Home() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { isAuthenticated, token } = useAuth();
 
   useEffect(() => {
     async function loadCourses() {
+      if (!isAuthenticated || !token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const result = await getCourses();
+        const result = await getCourses(token);
         setCourses(result.data);
       } catch (err) {
-        setError(
-          "Unable to load courses. Please make sure the backend is running."
-        );
+        setError(err.message || "Unable to load courses.");
       } finally {
         setLoading(false);
       }
     }
 
     loadCourses();
-  }, []);
+  }, [isAuthenticated, token]);
 
   const featuredCourses = courses.slice(0, 3);
 
@@ -66,6 +71,25 @@ export default function Home() {
     );
   }
 
+  if (!isAuthenticated) {
+    return (
+      <div>
+        <Hero />
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p className="text-gray-600 text-lg mb-4">Please log in to view courses.</p>
+            <Link
+              href="/login"
+              className="inline-flex items-center px-8 py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
+            >
+              Log In
+            </Link>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div>
@@ -95,11 +119,15 @@ export default function Home() {
             title="Featured Courses"
             subtitle="Explore our most popular courses and start learning today."
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredCourses.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
+          {featuredCourses.length === 0 ? (
+            <p className="text-center text-gray-500 py-8">No featured courses available.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredCourses.map((course) => (
+                <CourseCard key={course.id} course={course} />
+              ))}
+            </div>
+          )}
           <div className="text-center mt-12">
             <Link
               href="/courses"

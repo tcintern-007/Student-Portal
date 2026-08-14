@@ -1,7 +1,11 @@
 import Link from "next/link";
-import { Clock, User, BarChart3 } from "lucide-react";
+import { Clock, User, BarChart3, Pencil, Trash2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 export default function CourseCard({ course }) {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
       <div className="relative h-48 overflow-hidden">
@@ -42,25 +46,43 @@ export default function CourseCard({ course }) {
             <BarChart3 className="w-4 h-4 mr-1" />
             {course.level}
           </div>
-          <Link
-            href={`/courses/${course.slug}`}
-            className="inline-flex items-center text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
-          >
-            View Details
-            <svg
-              className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div className="flex items-center gap-3">
+            {isAdmin && (
+              <>
+                <button
+                  className="text-blue-600 hover:text-blue-700 transition-colors"
+                  title="Edit course"
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
+                <button
+                  className="text-red-600 hover:text-red-700 transition-colors"
+                  title="Delete course"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </>
+            )}
+            <Link
+              href={`/courses/${course.id}`}
+              className="inline-flex items-center text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </Link>
+              View Details
+              <svg
+                className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

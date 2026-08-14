@@ -1,30 +1,45 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getCourses } from "../../../lib/api";
+import { getCourseById } from "../../../lib/api";
 import { Clock, User, BarChart3, ArrowLeft, CheckCircle } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function CourseDetail({ params }) {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { token, isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     async function loadCourse() {
+      if (!isAuthenticated) return;
+
       try {
-        const result = await getCourses();
-        const found = result.data.find((c) => c.slug === params.slug);
-        setCourse(found);
+        const result = await getCourseById(params.slug, token);
+        setCourse(result.data);
       } catch (err) {
-        setError("Unable to load course details.");
+        setError(err.message || "Unable to load course details.");
       } finally {
         setLoading(false);
       }
     }
 
     loadCourse();
-  }, [params.slug]);
+  }, [isAuthenticated, token, params.slug]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   if (loading) {
     return (

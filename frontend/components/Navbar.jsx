@@ -3,13 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LogIn, UserPlus, LogOut, User } from "lucide-react";
+import { Menu, X, LogIn, UserPlus, LogOut, User, PlusCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { isAuthenticated, user, logout } = useAuth();
+
+  const isAdmin = user?.role === "admin";
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -63,6 +65,11 @@ export default function Navbar() {
                 <span className="text-sm text-gray-600 flex items-center gap-1.5">
                   <User size={16} />
                   {user?.name}
+                  {isAdmin && (
+                    <span className="ml-1 px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full">
+                      Admin
+                    </span>
+                  )}
                 </span>
                 <Link
                   href="/profile"
@@ -70,6 +77,15 @@ export default function Navbar() {
                 >
                   Profile
                 </Link>
+                {isAdmin && (
+                  <Link
+                    href="/courses"
+                    className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200 flex items-center gap-1.5"
+                  >
+                    <PlusCircle size={16} />
+                    Manage Courses
+                  </Link>
+                )}
                 <button
                   onClick={handleLogout}
                   className="text-sm font-medium text-red-600 hover:text-red-700 transition-colors duration-200 flex items-center gap-1.5"
@@ -132,6 +148,11 @@ export default function Navbar() {
                   <div className="px-4 py-2 text-sm text-gray-600 flex items-center gap-2">
                     <User size={16} />
                     {user?.name}
+                    {isAdmin && (
+                      <span className="ml-1 px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full">
+                        Admin
+                      </span>
+                    )}
                   </div>
                   <Link
                     href="/profile"
@@ -140,6 +161,15 @@ export default function Navbar() {
                   >
                     Profile
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/courses"
+                      onClick={() => setIsOpen(false)}
+                      className="mx-4 block px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      Manage Courses
+                    </Link>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="mx-4 mt-2 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-200"

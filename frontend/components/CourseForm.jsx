@@ -1,17 +1,39 @@
 "use client";
 
-import { useState } from "react";
-import { createCourse } from "../lib/api";
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { createCourse, getInstructors } from "../lib/api";
 
 export default function CourseForm({ onCourseAdded }) {
   const [formData, setFormData] = useState({
     title: "",
-    instructor: "",
+    instructor_id: "",
     description: "",
-    duration: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
+  const [instructors, setInstructors] = useState([]);
+  const [loadingInstructors, setLoadingInstructors] = useState(true);
+
+  const { user, token } = useAuth();
+  const isAdmin = user?.role === "admin";
+
+  useEffect(() => {
+    async function loadInstructors() {
+      try {
+        const data = await getInstructors();
+        setInstructors(data);
+      } catch (err) {
+        setMessage(err.message || "Failed to load instructors.");
+      } finally {
+        setLoadingInstructors(false);
+      }
+    }
+
+    if (isAdmin) {
+      loadInstructors();
+    }
+  }, [isAdmin]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,8 +41,17 @@ export default function CourseForm({ onCourseAdded }) {
     setMessage("");
 
     try {
-      await createCourse(formData);
-      setFormData({ title: "", instructor: "", description: "", duration: "" });
+      const payload = {
+        title: formData.title.trim(),
+        instructor_id: formData.instructor_id ? Number(formData.instructor_id) : null,
+        description: formData.description.trim(),
+      };
+
+      console.log("Token exists:", !!token);
+      console.log("Creating course:", payload);
+
+      await createCourse(payload, token);
+      setFormData({ title: "", instructor_id: "", description: "" });
       setMessage("Course added successfully!");
       if (onCourseAdded) {
         onCourseAdded();
@@ -38,6 +69,10 @@ export default function CourseForm({ onCourseAdded }) {
       [e.target.name]: e.target.value,
     });
   };
+
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
@@ -64,21 +99,29 @@ export default function CourseForm({ onCourseAdded }) {
 
         <div>
           <label
-            htmlFor="instructor"
+            htmlFor="instructor_id"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
             Instructor
           </label>
-          <input
-            type="text"
-            id="instructor"
-            name="instructor"
-            value={formData.instructor}
+          <select
+            id="instructor_id"
+            name="instructor_id"
+            value={formData.instructor_id}
             onChange={handleChange}
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            placeholder="e.g. John Doe"
-          />
+          >
+            <option value="">
+              {loadingInstructors ? "Loading instructors..." : "Select an instructor"}
+            </option>
+            {!loadingInstructors &&
+              instructors.map((instructor) => (
+                <option key={instructor.id} value={instructor.id}>
+                  {instructor.name}
+                </option>
+              ))}
+          </select>
         </div>
 
         <div>
@@ -100,28 +143,9 @@ export default function CourseForm({ onCourseAdded }) {
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="duration"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Duration
-          </label>
-          <input
-            type="text"
-            id="duration"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            placeholder="e.g. 8 Weeks"
-          />
-        </div>
-
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || loadingInstructors}
           className="w-full inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting ? "Adding Course..." : "Add Course"}
