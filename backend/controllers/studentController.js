@@ -20,7 +20,7 @@ export const getStudentById = async (req, res, next) => {
         const { id } = req.params;
 
         const result = await pool.query(
-            "SELECT * FROM students WHERE id = $1",
+            "SELECT * FROM students WHERE id = $1 LIMIT 1",
             [id]
         );
 

@@ -57,7 +57,7 @@ export const getCourseById = async (req, res, next) => {
         const { id } = req.params;
 
         const result = await pool.query(
-            "SELECT * FROM courses WHERE id = $1",
+            "SELECT * FROM courses WHERE id = $1 LIMIT 1",
             [id]
         );
 

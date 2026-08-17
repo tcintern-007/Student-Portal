@@ -2,6 +2,45 @@ import pool from "../config/db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+const failedLoginAttempts = new Map();
+
+const MAX_FAILED_ATTEMPTS = 5;
+const BLOCK_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
+const getAttemptRecord = (email) => {
+    const key = email.toLowerCase();
+    const record = failedLoginAttempts.get(key);
+
+    if (!record) {
+        return { count: 0, blockedUntil: null };
+    }
+
+    if (record.blockedUntil && Date.now() > record.blockedUntil) {
+        failedLoginAttempts.delete(key);
+        return { count: 0, blockedUntil: null };
+    }
+
+    return record;
+};
+
+const recordFailedAttempt = (email) => {
+    const key = email.toLowerCase();
+    const record = getAttemptRecord(email);
+
+    record.count += 1;
+    record.lastAttempt = Date.now();
+
+    if (record.count > MAX_FAILED_ATTEMPTS) {
+        record.blockedUntil = Date.now() + BLOCK_DURATION_MS;
+    }
+
+    failedLoginAttempts.set(key, record);
+};
+
+const clearFailedAttempts = (email) => {
+    failedLoginAttempts.delete(email.toLowerCase());
+};
+
 export const register = async (req, res, next) => {
     try {
         const { name, email, password } = req.body;
@@ -57,11 +96,19 @@ export const login = async (req, res, next) => {
         }
 
         const result = await pool.query(
-            "SELECT * FROM users WHERE email = $1",
+            "SELECT id, name, email, password, role FROM users WHERE email = $1",
             [email]
         );
 
         if (result.rows.length === 0) {
+            recordFailedAttempt(email);
+            const record = getAttemptRecord(email);
+            if (record.count > MAX_FAILED_ATTEMPTS) {
+                return res.status(429).json({
+                    success: false,
+                    message: "Too many failed login attempts. Please try again later.",
+                });
+            }
             return res.status(401).json({
                 success: false,
                 message: "Invalid email or password",
@@ -76,11 +123,21 @@ export const login = async (req, res, next) => {
         );
 
         if (!passwordMatch) {
+            recordFailedAttempt(email);
+            const record = getAttemptRecord(email);
+            if (record.count > MAX_FAILED_ATTEMPTS) {
+                return res.status(429).json({
+                    success: false,
+                    message: "Too many failed login attempts. Please try again later.",
+                });
+            }
             return res.status(401).json({
                 success: false,
                 message: "Invalid email or password",
             });
         }
+
+        clearFailedAttempts(email);
 
         const token = jwt.sign(
             {
